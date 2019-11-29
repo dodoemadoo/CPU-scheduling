@@ -25,13 +25,14 @@ class The_Comparator implements Comparator<Process>
         return 0;
     } 
 }
-class Process{
-String ProcessName;
-String ProcessColor;
-int ArrivalTime;
-int BurstTime;
-int waitingTime;
-int tournarTime;
+class Process
+{
+	String ProcessName;
+	String ProcessColor;
+	int ArrivalTime;
+	int BurstTime;
+	int waitingTime;
+	int tournarTime;
 }
 public class shortestJobFirst 
 {
