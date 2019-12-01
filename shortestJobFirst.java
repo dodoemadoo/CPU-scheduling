@@ -1,19 +1,11 @@
 
-import static java.lang.System.out;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-
-class The_Comparator implements Comparator<Process>
+class The_Comparator implements Comparator<scheduling>
 { 
-    public int compare(Process p1, Process p2) 
+    public int compare(scheduling p1, scheduling p2) 
     { 
         if(p1.ArrivalTime>p2.ArrivalTime)
         {
@@ -25,50 +17,36 @@ class The_Comparator implements Comparator<Process>
         return 0;
     } 
 }
-class Process
-{
-	String ProcessName;
-	String ProcessColor;
-	int ArrivalTime;
-	int BurstTime;
-	int waitingTime;
-	int tournarTime;
-}
+
 public class shortestJobFirst 
 {
-	PriorityQueue<Process> queue;
+	PriorityQueue<scheduling> queue;
+	private Scanner scan = new Scanner(System.in);
+	int numOfProcesses;
     shortestJobFirst()
     {
-	    Scanner s=new Scanner(System.in); 
-	    int numofprocess,At,Bt;  
-	    String name,colour;
-	    System.out.println("Enter the number of Processes :");
-	    numofprocess=s.nextInt();
-	    PriorityQueue<Process> queue = new PriorityQueue<Process>(numofprocess,new The_Comparator());
-	    for(int i=0;i<numofprocess;i++)
+	    System.out.print("Enter the number of processes: ");
+	    numOfProcesses=scan.nextInt();
+	    queue = new PriorityQueue<scheduling>(numOfProcesses,new The_Comparator());
+	    for(int i=0;i<numOfProcesses;i++)
 	    {
-	    Process p=new Process();
-	    name=s.nextLine(); 
-	    System.out.println("Enter the name :");
-	    name=s.nextLine();  
-	    System.out.println("Enter the color :");
-	    colour=s.nextLine();
-	    System.out.println("Enter the Arrival time :");
-	    At=s.nextInt();
-	    System.out.println("Enter the Burst Time :");
-	    Bt=s.nextInt();
-	    p.ArrivalTime=At;
-	    p.BurstTime=Bt;
-	    p.ProcessName=name;
-	    p.ProcessColor=colour;
-	    queue.add(p);
+		    scheduling p=new scheduling();
+		    System.out.print("Enter the name :");
+		    p.ProcessName=scan.nextLine();  
+		    System.out.print("Enter the color :");
+		    p.ProcessColor=scan.nextLine();
+		    System.out.print("Enter the Arrival time :");
+		    p.ArrivalTime=scan.nextInt();
+		    System.out.print("Enter the Burst Time :");
+		    p.BurstTime=scan.nextInt();
+		    queue.add(p);
 	    }
 	    makechart(queue);
     }
-	public void makechart(PriorityQueue<Process> q)
+	public void makechart(PriorityQueue<scheduling> q)
 	{
 		 int [][]temp = new int[q.size()][2];
-		 PriorityQueue<Process> q2;
+		 PriorityQueue<scheduling> q2;
 		 q2=q;
 		 for(int i=0;i<q.size();i++)
 		 {
