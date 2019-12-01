@@ -1,17 +1,10 @@
-package cpu.scheduling.master;
-
-import static java.lang.System.out;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 class The_Comparator implements Comparator<Process> { 
     public int compare(Process p1, Process p2) 
@@ -26,14 +19,15 @@ class The_Comparator implements Comparator<Process> {
         return 0;
     } 
 }
-class Process{
-String ProcessName;
-String ProcessColor;
-int ArrivalTime;
-int BurstTime;
-int waitingTime;
-int tournarTime;
-boolean visited;
+class Process
+{
+	String ProcessName;
+	String ProcessColor;
+	int ArrivalTime;
+	int BurstTime;
+	int waitingTime;
+	int tournarTime;
+	boolean visited;
 }
 
 public class shortestJobFirst {
