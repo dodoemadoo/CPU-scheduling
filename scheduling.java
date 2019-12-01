@@ -6,5 +6,4 @@ public class scheduling
 	int ArrivalTime;
 	int BurstTime;
 	int waitingTime;
-	int tournarTime;
 }
