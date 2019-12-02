@@ -1,3 +1,5 @@
+import java.util.Iterator;
+import java.util.PriorityQueue;
 import java.util.Scanner;
 
 
@@ -9,6 +11,7 @@ public class AG
 	{
 		System.out.print("Enter the number of processes: ");
 	    numOfProcess=scan.nextInt();
+	    PriorityQueue<AGprocess> queue = new PriorityQueue<AGprocess>(numOfProcess,new MyComparator());
 	    for(int i=0;i<numOfProcess;i++)
 	    {
 		    scan = new Scanner(System.in);	
@@ -24,6 +27,10 @@ public class AG
 		    System.out.print("Enter the priority: ");
 		    p.priority = scan.nextInt();
 		    p.AG_Factor = p.priority + p.arrivalTime + p.burstTime;
+		    queue.add(p);
 	    }      
+	    Iterator<AGprocess> itr = queue.iterator(); 
+        while (itr.hasNext()) 
+            System.out.println(itr.next().processName);
 	}
 }

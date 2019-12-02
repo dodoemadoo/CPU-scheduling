@@ -1,5 +1,6 @@
 
-abstract class process {
+abstract class process 
+{
 	String processName;
 	String processColor;
 	int arrivalTime;

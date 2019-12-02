@@ -6,20 +6,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Scanner;
 
-class MyComparator implements Comparator<process> 
-{ 
-    public int compare(process p1, process p2) 
-    { 
-        if(p1.arrivalTime>p2.arrivalTime)
-        {
-        return 1;
-        }
-        else if(p1.arrivalTime<p2.arrivalTime){
-        return -1;
-        }
-        return 0;
-    } 
-}
 
 public class shortestJobFirst 
 {
