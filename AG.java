@@ -6,12 +6,16 @@ import java.util.Scanner;
 public class AG 
 {
 	private Scanner scan= new Scanner(System.in);
+	private PriorityQueue<AGprocess> queue;
+	private int[] npQuantum,pQuantum;
 	private int numOfProcess;
 	public AG() 
 	{
 		System.out.print("Enter the number of processes: ");
 	    numOfProcess=scan.nextInt();
-	    PriorityQueue<AGprocess> queue = new PriorityQueue<AGprocess>(numOfProcess,new MyComparator());
+	    queue = new PriorityQueue<AGprocess>(numOfProcess,new MyComparator());
+	    npQuantum = new int[numOfProcess];
+	    pQuantum = new int[numOfProcess];
 	    for(int i=0;i<numOfProcess;i++)
 	    {
 		    scan = new Scanner(System.in);	
