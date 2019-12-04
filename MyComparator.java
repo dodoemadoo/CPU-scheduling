@@ -1,6 +1,6 @@
 import java.util.Comparator;
 
-public class MyComparator implements Comparator<AGprocess> 
+public class MyComparator implements Comparator<process> 
 {	
 	public int compare(process p1, process p2)
 	{
