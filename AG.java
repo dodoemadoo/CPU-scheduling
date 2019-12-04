@@ -27,7 +27,7 @@ public class AG
 	    numOfProcess=scan.nextInt();
 		System.out.print("Enter the quantum of processes: ");
 	    quantum=scan.nextInt();
-	    queue = new PriorityQueue<AGprocess>(numOfProcess,new sortByAG());
+	    queue = new PriorityQueue<AGprocess>(numOfProcess);
 	    for(int i=0;i<numOfProcess;i++)
 	    {
 		    scan = new Scanner(System.in);	
