@@ -12,7 +12,7 @@ public class Main
 	{
 		System.out.println("Enter (1) to make shortest job first scheduling.");
 		System.out.println("Enter (2) to make shortest remaining time first scheduling.");
-		System.out.println("Enter (2) to make priority scheduling.");
+		System.out.println("Enter (3) to make priority scheduling.");
 		System.out.println("Enter (4) to make ag scheduling.");
 		System.out.print("Enter your choice: ");
 		choice = scan.nextLine();
