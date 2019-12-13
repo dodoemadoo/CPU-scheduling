@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 class runningProcess
 {
 	int startTime,endTime;
@@ -16,7 +18,7 @@ public class AG
 	private int[] npQuantum,pQuantum;
 	private AGprocess currProcess = null;
 	private runningProcess rp = null;
-	private int numOfProcess,quantum,processFT,time=0;
+	private int numOfProcess,quantum,time=0;
 	public AG() 
 	{
 		System.out.print("Enter the number of processes: ");
@@ -42,48 +44,98 @@ public class AG
 	    }  
 	    npQuantum = new int[numOfProcess];
 	    pQuantum = new int[numOfProcess];
-	    pQuantum = fill_pQuantum(pQuantum, quantum);
+	    pQuantum = fill_Quantum(pQuantum, quantum);
 	    npQuantum = fill_npQuantum(npQuantum, pQuantum);
 	    while (numOfProcess!=0) 
 	    {
-		    fillRQ(readyprocessQueue, processQueue, time);
+	    	System.out.print("pQuantum: ");
+	    	printArr(pQuantum);
+	    	System.out.print("npQuantum: ");
+	    	printArr(npQuantum);
+		    readyprocessQueue = fillRQ(readyprocessQueue, processQueue, time);
 			if (readyprocessQueue.size()!=0 || currProcess!=null) 
 			{
 				if (currProcess==null)
-				{
 					currProcess = readyprocessQueue.remove(0);
+				if (rp == null)
+				{
 					rp = new runningProcess();
 					rp.startTime = time;
 					rp.name = currProcess.processName;
-					int index = getProcessIndex(currProcess.processName, processQueue);
-					if ( npQuantum[index] < currProcess.burstTime) 
+				}
+				int index = getProcessIndex(currProcess.processName, processQueue);
+				if ( npQuantum[index] < currProcess.burstTime) 
+				{
+					time += npQuantum[index];
+					processQueue[index].burstTime -= npQuantum[index];
+					readyprocessQueue = fillRQ(readyprocessQueue, processQueue, time);
+					if(getMinAG(readyprocessQueue,currProcess)!=null)
 					{
-						/*if(pQuantum[index] <= currProcess.burstTime)
-							
-						else*/
-							
-					}
-					else 
-					{
-						time += currProcess.burstTime;
-						currProcess.burstTime = 0;
 						rp.endTime = time;
 						runningprocessQueue.add(rp);
-						currProcess = null;
+						rp = null;
+						pQuantum[index] += (pQuantum[index]-npQuantum[index]);
+						readyprocessQueue.add(currProcess);
+						currProcess = getMinAG(readyprocessQueue, currProcess);
+						readyprocessQueue.remove(currProcess);
+					}
+					else
+					{
+						boolean check = true;
+						for (int i = npQuantum[index]+1; i < pQuantum[index]; i++) 
+						{
+							time++; 
+							readyprocessQueue = fillRQ(readyprocessQueue, processQueue, time);
+							processQueue[index].burstTime --;
+							if(getMinAG(readyprocessQueue, currProcess) == null)
+							{
+								continue;
+							}
+							else
+							{
+								check = false;
+								processQueue[index].burstTime -= (pQuantum[index]-i);
+								pQuantum[index] += (pQuantum[index]-i);
+								rp.endTime = time;
+								runningprocessQueue.add(rp);
+								rp = null;
+								readyprocessQueue.add(currProcess);
+								currProcess = getMinAG(readyprocessQueue, currProcess);
+								readyprocessQueue.remove(currProcess);
+								break;
+							}
+						}
+						if(check)
+						{
+							currProcess = null;
+							pQuantum[index] += getMeanQuantum(pQuantum);
+						}
 					}
 				}
-				else
+				else 
 				{
-					
+					time += currProcess.burstTime;
+					processQueue[index].burstTime = 0;
+					pQuantum[index] = 0;
+					npQuantum[index] = 0;
+					rp.endTime = time;
+					runningprocessQueue.add(rp);
+					currProcess = null;
+					numOfProcess--;
+					rp = null;
 				}
+				fill_npQuantum(npQuantum, pQuantum);
 			}
 			else
 				time++;
-			
+		}
+	    for (int i = 0; i < runningprocessQueue.size(); i++) 
+	    {
+			System.out.println(runningprocessQueue.get(i).name+" "+runningprocessQueue.get(i).startTime+" "+runningprocessQueue.get(i).endTime);
 		}
 	}
 	
-	public static int[] fill_pQuantum(int[] arr,int value)
+	public static int[] fill_Quantum(int[] arr,int value)
 	{
 		for (int i = 0; i < arr.length; i++) 
 		{
@@ -100,6 +152,17 @@ public class AG
 		}
 		return npQuantum;
 	} 
+	
+	public static int getMeanQuantum(int[] arr) 
+	{
+		int mean = 0;
+		for (int i = 0; i < arr.length; i++) 
+		{
+			mean += arr[i];
+		}
+		mean = (int)Math.ceil(mean*0.1);
+		return mean;
+	}
 	
 	public static void printArr(int[] arr)
 	{
@@ -130,28 +193,32 @@ public class AG
 		return minProcess;
 	}
 	
-	public static AGprocess getMinAG(ArrayList<AGprocess> rq)
+	public static AGprocess getMinAG(ArrayList<AGprocess> rq, AGprocess curr)
 	{
-		AGprocess minProcess = rq.get(0);
-		for (int i = 1; i < rq.size(); i++)
+		boolean check = false;
+		AGprocess minProcess = curr;
+		for (int i = 0; i < rq.size(); i++)
 		{
 			if(minProcess.AG_Factor > rq.get(i).AG_Factor)
-				minProcess = rq.get(i);
-		}
-		return minProcess;
-	}
-	public static Boolean fillRQ(ArrayList<AGprocess> rq, AGprocess[] q,int t) 
-	{
-		Boolean check = false;
-		for (int i = 0; i < q.length; i++)
-		{
-			if (q[i].arrivalTime <= t && !rq.contains(q[i]))
 			{
 				check = true;
+				minProcess = rq.get(i);
+			}
+		}
+		if(check)
+			return minProcess;
+		return null;
+	}
+	public static ArrayList<AGprocess> fillRQ(ArrayList<AGprocess> rq, AGprocess[] q,int t) 
+	{
+		for (int i = 0; i < q.length; i++)
+		{
+			if (q[i].arrivalTime <= t && !rq.contains(q[i]) && q[i].burstTime!=0 )
+			{
 				rq.add(q[i]);
 			}
 		}
-		return check;
+		return rq;
 	}
 	
 	public static int getProcessIndex(String key , AGprocess[] pq) 
