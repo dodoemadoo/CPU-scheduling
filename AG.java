@@ -235,4 +235,9 @@ public class AG
 		}
 		return -1;
 	}
+	
+	public ArrayList<runningProcess> getRP() 
+	{
+		return runningprocessQueue;
+	}
 }

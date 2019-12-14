@@ -21,9 +21,7 @@ public class shortestJobFirst
 	    {
 		    process p=new SJFprocess();
 		    System.out.print("Enter the name: ");
-		    p.processName=scan.nextLine();  
-		    System.out.print("Enter the color: ");
-		    p.processColor=scan.nextLine();
+		    p.processName=scan.nextLine();
 		    System.out.print("Enter the Arrival time: ");
 		    p.arrivalTime=scan.nextInt();
 		    System.out.print("Enter the Burst Time: ");
