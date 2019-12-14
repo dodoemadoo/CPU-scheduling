@@ -13,10 +13,11 @@ public class AG
 	private ArrayList<AGprocess> readyprocessQueue = new ArrayList<AGprocess>();
 	private ArrayList<runningProcess>runningprocessQueue = new ArrayList<runningProcess>();
 	private AGprocess[] processQueue;
-	private int[] npQuantum,pQuantum;
+	private int[] npQuantum,pQuantum,TAT,WT;
 	private AGprocess currProcess = null;
 	private runningProcess rp = null;
 	private int numOfProcess,quantum,time=0;
+	double AWT,ATAT;
 	public AG() 
 	{
 		System.out.print("Enter the number of processes: ");
@@ -35,11 +36,14 @@ public class AG
 		    System.out.print("Enter the burst Time: ");
 		    processQueue[i].burstTime = scan.nextInt();
 		    System.out.print("Enter the priority: ");
+		    processQueue[i].cpBrustTime = processQueue[i].burstTime;
 		    processQueue[i].priority = scan.nextInt();
 		    processQueue[i].AG_Factor = processQueue[i].priority + processQueue[i].arrivalTime + processQueue[i].burstTime;
 	    }  
 	    npQuantum = new int[numOfProcess];
 	    pQuantum = new int[numOfProcess];
+	    TAT = new int[numOfProcess];
+	    WT = new int[numOfProcess];
 	    pQuantum = fill_Quantum(pQuantum, quantum);
 	    npQuantum = fill_npQuantum(npQuantum, pQuantum);
 	    while (numOfProcess!=0) 
@@ -156,6 +160,16 @@ public class AG
 	    {
 			System.out.println(runningprocessQueue.get(i).name+" "+runningprocessQueue.get(i).startTime+" "+runningprocessQueue.get(i).endTime);
 		}
+	    
+	    TAT = calTAT(TAT, runningprocessQueue, processQueue);
+	    WT = calWT(WT, processQueue, TAT);
+	    ATAT = calATAT(TAT);
+	    AWT = calAWT(WT);
+	    printArr(TAT);
+	    System.out.println("--------------------------------------------------------------");
+	    printArr(WT);
+	    System.out.println("--------------------------------------------------------------");
+	    System.out.println(ATAT+" "+AWT);
 	}
 	
 	public static int[] fill_Quantum(int[] arr,int value)
@@ -236,8 +250,84 @@ public class AG
 		return -1;
 	}
 	
+	public static runningProcess getIndex(String key ,ArrayList<runningProcess>RP) 
+	{
+		for (int i = 0; i < RP.size(); i++)
+		{
+			if (key.equals(RP.get(i).name))
+				return RP.get(i);
+		}
+		return null;
+	}
+	
+	public static int getLastIndex(String key ,ArrayList<runningProcess>RP)
+	{
+		int index = -1;
+		for (int i = RP.size()-1; i >= 0; i--) 
+		{
+			if (key.equals(RP.get(i).name))
+			{
+				return i;
+			}
+		}
+		return index;
+	}
+	
+	public int[] calTAT(int[] arr,ArrayList<runningProcess>RP, AGprocess[] QP) 
+	{
+		for (int i = 0; i < arr.length; i++)
+		{
+			runningProcess rp = getIndex(QP[i].processName, RP);
+			int LI = getLastIndex(QP[i].processName, RP);
+			int FI = RP.indexOf(rp);
+			arr[i] = RP.get(LI).endTime - RP.get(FI).startTime;
+		}
+		return arr;
+	}
+	
+	public int[] calWT(int[] arr, AGprocess[] QP,int[] TAT) 
+	{
+		for (int i = 0; i < arr.length; i++) 
+		{
+			arr[i] = TAT[i] - QP[i].cpBrustTime;
+		}
+		return arr;
+	}
+	
+	public double calAWT(int[] arr) 
+	{
+		double AWT = 0;
+		for (int i = 0; i < arr.length; i++) 
+		{
+			AWT += arr[i];
+		}
+		AWT /= arr.length;
+		return AWT;
+	}
+	
+	public double calATAT(int[] arr) 
+	{
+		double ATAT = 0;
+		for (int i = 0; i < arr.length; i++) 
+		{
+			ATAT += arr[i];
+		}
+		ATAT /= arr.length;
+		return ATAT;
+	}
+	
 	public ArrayList<runningProcess> getRP() 
 	{
 		return runningprocessQueue;
+	}
+	
+	public double getATAT() 
+	{
+		return ATAT;
+	}
+	
+	public double getAWT() 
+	{
+		return AWT;
 	}
 }
