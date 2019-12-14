@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
-
 class runningProcess
 {
 	int startTime,endTime;
@@ -32,8 +30,6 @@ public class AG
 		    processQueue[i] = new AGprocess();
 		    System.out.print("Enter the name: ");
 		    processQueue[i].processName = scan.nextLine();  
-		    System.out.print("Enter the color: ");
-		    processQueue[i].processColor = scan.nextLine();
 		    System.out.print("Enter the arrival time: ");
 		    processQueue[i].arrivalTime = scan.nextInt();
 		    System.out.print("Enter the burst Time: ");
@@ -69,6 +65,8 @@ public class AG
 				{
 					time += npQuantum[index];
 					processQueue[index].burstTime -= npQuantum[index];
+					if (processQueue[index].processName.equals("p1"))
+						System.out.println(processQueue[index].burstTime);
 					readyprocessQueue = fillRQ(readyprocessQueue, processQueue, time,currProcess);
 					if(getMinAG(readyprocessQueue,currProcess)!=null)
 					{
@@ -85,7 +83,7 @@ public class AG
 						boolean check = true;
 						for (int i = npQuantum[index]+1; i <= pQuantum[index]; i++) 
 						{
-							time++;
+							++time;
 							readyprocessQueue = fillRQ(readyprocessQueue, processQueue, time , currProcess);
 							processQueue[index].burstTime --;
 							if(processQueue[index].burstTime==0)
@@ -108,7 +106,7 @@ public class AG
 							else
 							{
 								check = false;
-								processQueue[index].burstTime -= (pQuantum[index]-i);
+								processQueue[index].burstTime -= (pQuantum[index]-i-1);
 								pQuantum[index] += (pQuantum[index]-i);
 								rp.endTime = time;
 								runningprocessQueue.add(rp);
@@ -119,6 +117,8 @@ public class AG
 								break;
 							}
 						}
+						if (processQueue[index].processName.equals("p1"))
+							System.out.println(processQueue[index].burstTime);
 						if(check)
 						{
 							readyprocessQueue.add(currProcess);
