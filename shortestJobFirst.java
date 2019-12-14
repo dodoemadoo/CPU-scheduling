@@ -1,114 +1,184 @@
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Scanner;
-
 
 public class shortestJobFirst 
 {
-    PriorityQueue<process> queue;
 	private Scanner scan= new Scanner(System.in);
-	private int numOfprocess;
+	private ArrayList<SJFprocess> readyprocessQueue = new ArrayList<SJFprocess>();
+	private ArrayList<runningProcess>runningprocessQueue = new ArrayList<runningProcess>();
+	private SJFprocess[] processQueue;
+	private int[] TAT,WT;
+	private SJFprocess currProcess = null;
+	private runningProcess rp = null;
+	private int numOfProcess,time=0;
+	double AWT,ATAT;
     shortestJobFirst()
     {
-	    System.out.print("Enter the number of processes: ");
-	    numOfprocess=scan.nextInt();
-	    PriorityQueue<process> queue = new PriorityQueue<process>(numOfprocess,new MyComparator());
-	    for(int i=0;i<numOfprocess;i++)
+    	System.out.print("Enter the number of processes: ");
+	    numOfProcess=scan.nextInt();
+	    processQueue = new SJFprocess[numOfProcess];
+	    for(int i=0;i<numOfProcess;i++)
 	    {
-		    process p=new SJFprocess();
+		    scan = new Scanner(System.in);
+		    processQueue[i] = new SJFprocess();
 		    System.out.print("Enter the name: ");
-		    p.processName=scan.nextLine();
-		    System.out.print("Enter the Arrival time: ");
-		    p.arrivalTime=scan.nextInt();
-		    System.out.print("Enter the Burst Time: ");
-		    p.burstTime=scan.nextInt();
-		    //p.visited=false;
-		    queue.add(p);
-	    }      
-	    List<Integer>res=makechart(queue);
-        System.out.println("The process order is..");
-        Iterator<process> value = queue.iterator();
-        int avWaiting=0,avtounar=0;
-        for(int i=0;i<res.size();i++){
-           while(value.hasNext()){
-               process nex = value.next(); 
-              if(i!=res.size()-1){ 
-              //if(res.get(i+1)-res.get(i)==nex.burstTime && nex.visited==false){
-            	  if(res.get(i+1)-res.get(i)==nex.burstTime) {  
-            	  nex.waitingTime=res.get(i)-nex.arrivalTime;
-                  //nex.tournarTime=nex.waitingTime+nex.burstTime;
-                  //System.out.println(nex.processName+" "+nex.waitingTime+" "+nex.tournarTime);
-                  System.out.println(nex.processName+" "+nex.waitingTime);
-                  //nex.visited=true;
-                  avWaiting+=nex.waitingTime;
-                  //avtounar+=nex.tournarTime;
-                  value=queue.iterator();
-                  break;
-              }
-              else{
-              continue;
-              }
-              }
-           }
-        }
-        System.out.println("The Average waiting time = "+avWaiting/queue.size());
-        System.out.println("The Average Tournar time = "+avtounar/queue.size());
-    }
-	public List<Integer> makechart(PriorityQueue<process> q)
-	{
-		List <Integer>chart=new ArrayList<Integer>();    
-		int [][]temp = new int[q.size()][2];
-		Iterator<process> value = q.iterator();  
-		for(int i=0;i<q.size();i++)
-		{
-		     process nex=(process) value.next();
-		     for(int j=0;j<2;j++)
-		     {
-		    	 if(j==0)
-		    		 temp[i][j]=nex.arrivalTime;
-		         else
-		        	 temp[i][j]=nex.burstTime;           
-		     }
+		    processQueue[i].processName = scan.nextLine();  
+		    System.out.print("Enter the arrival time: ");
+		    processQueue[i].arrivalTime = scan.nextInt();
+		    System.out.print("Enter the burst Time: ");
+		    processQueue[i].burstTime = scan.nextInt();
+		    processQueue[i].cpBrustTime = processQueue[i].burstTime;
+	    }  
+	    TAT = new int[numOfProcess];
+	    WT = new int[numOfProcess];
+	    while (numOfProcess!=0) 
+	    {
+	    	readyprocessQueue = fillRQ(readyprocessQueue,runningprocessQueue ,processQueue, time);
+			if (readyprocessQueue.size()!=0) 
+			{
+				rp = new runningProcess();
+				currProcess = getMinBrust(readyprocessQueue);
+				readyprocessQueue.remove(currProcess);
+				rp.name = currProcess.processName;
+				rp.startTime = time;
+				time += currProcess.burstTime;
+				rp.endTime = time;
+				runningprocessQueue.add(rp);
+				processQueue[getProcessIndex(currProcess.processName, processQueue)].burstTime = 0;
+				numOfProcess--;
+			}
+			else 
+				time++;
+	    }
+	    for (int i = 0; i < runningprocessQueue.size(); i++) 
+	    {
+			System.out.println(runningprocessQueue.get(i).name+" "+runningprocessQueue.get(i).startTime+" "+runningprocessQueue.get(i).endTime);
 		}
-		if(all(temp))
+	    
+	    TAT = calTAT(TAT, runningprocessQueue, processQueue);
+	    WT = calWT(WT, processQueue, TAT);
+	    ATAT = calATAT(TAT);
+	    AWT = calAWT(WT);
+	    printArr(TAT);
+	    System.out.println("--------------------------------------------------------------");
+	    printArr(WT);
+	    System.out.println("--------------------------------------------------------------");
+	    System.out.println(ATAT+" "+AWT);
+    }
+    
+    public static void printArr(int[] arr)
+	{
+		for (int i = 0; i < arr.length; i++) 
 		{
-			chart.add(temp[0][0]);
-			chart.add(temp[0][1]);
-			List <Integer>temp2=new ArrayList<Integer>(); 
-			for(int i=1;i<temp.length;i++)
-			{
-				for(int j=0;j<2;j++)
-				{
-					if(j==1)
-						temp2.add(temp[i][j]);
-			    }
-			}
-			Collections.sort(temp2);
-			for(int i=0;i<temp2.size();i++)
-			{
-				chart.add(temp2.get(i)+chart.get(chart.size()-1)); 
-			}
-			return chart;
-			}
-	 else{
-	 }            
-	return chart;
+			System.out.print(arr[i]+" ");
+		}
+		System.out.println();
 	}
-	boolean all(int [][]arr){
-	 int index=arr[0][1];   
-	 for(int i=0;i<arr.length;i++){
-	       for(int j=0;j<2;j++){
-	           if(j==0){
-	           if(index<arr[i][j]){
-	               return false;
-	           }
-	               }
-	 }
-	 }
-	return true;
+	
+    public static ArrayList<SJFprocess> fillRQ(ArrayList<SJFprocess> rq,ArrayList<runningProcess>rp, SJFprocess[] q,int t) 
+	{
+		for (int i = 0; i < q.length; i++)
+		{
+			if (q[i].arrivalTime <= t && !rq.contains(q[i]) && q[i].burstTime!=0 )
+			{
+				rq.add(q[i]);
+			}
+		}
+		return rq;
+	}
+    
+    public static int getProcessIndex(String key , SJFprocess[] pq) 
+	{
+		for (int i = 0; i < pq.length; i++) 
+		{
+			if(pq[i].processName.equals(key))
+				return i;
+		}
+		return -1;
+	}
+    
+	public static SJFprocess getMinBrust(ArrayList<SJFprocess> rq)
+	{
+		boolean check = false;
+		SJFprocess minProcess = new SJFprocess();
+		minProcess.burstTime = 1000000000;
+		for (int i = 0; i < rq.size(); i++)
+		{
+			if(minProcess.burstTime > rq.get(i).burstTime)
+			{
+				check = true;
+				minProcess = rq.get(i);
+			}
+		}
+		if(check)
+			return minProcess;
+		return minProcess;
+	}
+    
+	public static runningProcess getIndex(String key ,ArrayList<runningProcess>RP) 
+	{
+		for (int i = 0; i < RP.size(); i++)
+		{
+			if (key.equals(RP.get(i).name))
+				return RP.get(i);
+		}
+		return null;
+	}
+	
+    public int[] calTAT(int[] arr,ArrayList<runningProcess>RP, SJFprocess[] QP) 
+	{
+		for (int i = 0; i < arr.length; i++)
+		{
+			runningProcess rp = getIndex(QP[i].processName, RP);
+			int index = RP.indexOf(rp);
+			arr[i] = RP.get(index).endTime - QP[i].arrivalTime;
+		}
+		return arr;
+	}
+	
+	public int[] calWT(int[] arr, SJFprocess[] QP,int[] TAT) 
+	{
+		for (int i = 0; i < arr.length; i++) 
+		{
+			arr[i] = TAT[i] - QP[i].cpBrustTime;
+		}
+		return arr;
+	}
+	
+	public double calAWT(int[] arr) 
+	{
+		double AWT = 0;
+		for (int i = 0; i < arr.length; i++) 
+		{
+			AWT += arr[i];
+		}
+		AWT /= arr.length;
+		return AWT;
+	}
+	
+	public double calATAT(int[] arr) 
+	{
+		double ATAT = 0;
+		for (int i = 0; i < arr.length; i++) 
+		{
+			ATAT += arr[i];
+		}
+		ATAT /= arr.length;
+		return ATAT;
+	}
+	
+	public ArrayList<runningProcess> getRP() 
+	{
+		return runningprocessQueue;
+	}
+	
+	public double getATAT() 
+	{
+		return ATAT;
+	}
+	
+	public double getAWT() 
+	{
+		return AWT;
 	}
 }

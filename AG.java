@@ -1,11 +1,7 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 
-class runningProcess
-{
-	int startTime,endTime;
-	String name;
-}
+
 
 public class AG 
 {
@@ -224,6 +220,7 @@ public class AG
 			return minProcess;
 		return null;
 	}
+	
 	public static ArrayList<AGprocess> fillRQ(ArrayList<AGprocess> rq, AGprocess[] q,int t, AGprocess curr) 
 	{
 		for (int i = 0; i < q.length; i++)
@@ -275,8 +272,7 @@ public class AG
 		{
 			runningProcess rp = getIndex(QP[i].processName, RP);
 			int LI = getLastIndex(QP[i].processName, RP);
-			int FI = RP.indexOf(rp);
-			arr[i] = RP.get(LI).endTime - RP.get(FI).startTime;
+			arr[i] = RP.get(LI).endTime - QP[i].arrivalTime;
 		}
 		return arr;
 	}
