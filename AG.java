@@ -69,8 +69,6 @@ public class AG
 				{
 					time += npQuantum[index];
 					processQueue[index].burstTime -= npQuantum[index];
-					if (processQueue[index].processName.equals("p1"))
-						System.out.println(processQueue[index].burstTime);
 					readyprocessQueue = fillRQ(readyprocessQueue, processQueue, time,currProcess);
 					if(getMinAG(readyprocessQueue,currProcess)!=null)
 					{
@@ -121,8 +119,6 @@ public class AG
 								break;
 							}
 						}
-						if (processQueue[index].processName.equals("p1"))
-							System.out.println(processQueue[index].burstTime);
 						if(check)
 						{
 							readyprocessQueue.add(currProcess);
